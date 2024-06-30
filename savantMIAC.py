@@ -42,18 +42,30 @@ tabs = st.tabs(["Hitter", "Pitcher", "Team"])
 
 with tabs[0]:
     st.header("Hitter Statistics")
-    hitter_percentiles_display = hitters_percentiles.mean()
-    fig = create_percentile_bar(hitter_percentiles_display, hitters.iloc[0, 2:], "Overall MIAC Hitter Statistics")
+    selected_team = st.selectbox("Select Team", hitters['Team'].unique())
+    team_hitters = hitters[hitters['Team'] == selected_team]
+    selected_player = st.selectbox("Select Player", team_hitters['Player'])
+    player_stats = team_hitters[team_hitters['Player'] == selected_player].iloc[0, 2:]
+    player_percentiles = hitters_percentiles.loc[team_hitters.index[team_hitters['Player'] == selected_player]].iloc[0]
+    fig = create_percentile_bar(player_percentiles, player_stats, f"{selected_player} - {selected_team} Hitter Statistics")
     st.pyplot(fig)
 
 with tabs[1]:
     st.header("Pitcher Statistics")
-    pitcher_percentiles_display = pitchers_percentiles.mean()
-    fig = create_percentile_bar(pitcher_percentiles_display, pitchers.iloc[0, 2:], "Overall MIAC Pitcher Statistics")
+    selected_team = st.selectbox("Select Team", pitchers['Team'].unique())
+    team_pitchers = pitchers[pitchers['Team'] == selected_team]
+    selected_player = st.selectbox("Select Player", team_pitchers['Player'])
+    player_stats = team_pitchers[team_pitchers['Player'] == selected_player].iloc[0, 2:]
+    player_percentiles = pitchers_percentiles.loc[team_pitchers.index[team_pitchers['Player'] == selected_player]].iloc[0]
+    fig = create_percentile_bar(player_percentiles, player_stats, f"{selected_player} - {selected_team} Pitcher Statistics")
     st.pyplot(fig)
 
 with tabs[2]:
     st.header("Team Statistics")
-    st.dataframe(team_sheet)
+    selected_team = st.selectbox("Select Team", team_sheet['Team'].unique())
+    team_stats = team_sheet[team_sheet['Team'] == selected_team].iloc[0, 1:]
+    team_percentiles = calculate_percentiles(team_sheet, team_stats.index).loc[team_sheet.index[team_sheet['Team'] == selected_team]].iloc[0]
+    fig = create_percentile_bar(team_percentiles, team_stats, f"{selected_team} Team Statistics")
+    st.pyplot(fig)
 
 # Run the app with `streamlit run app.py` (make sure to adjust the file path as needed)
